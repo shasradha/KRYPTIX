@@ -1,0 +1,227 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, viewport-fit=cover">
+  <title>Kryptix | Secure Messenger</title>
+  <link rel="manifest" href="./manifest.json">
+  <meta name="description" content="Kryptix — secure peer-to-peer encrypted messenger with AES-256-GCM encryption, voice/video calls, and file sharing. No server stores your data.">
+  <meta name="theme-color" content="#081015">
+  <meta name="mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600&family=Space+Grotesk:wght@400;500;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="./css/styles.css">
+</head>
+<body data-theme="dark">
+  <!-- Desktop Titlebar -->
+  <div id="desktopTitlebar" class="desktop-titlebar" style="display:none; justify-content: flex-start; align-items: center; padding-left: 14px;">
+    <img src="./logo.png" style="height: 16px; width: auto; object-fit: contain; margin-right: 8px;" alt="Logo">
+    <span style="font-family: var(--mono); font-size: 0.75rem; color: var(--txt2); letter-spacing: 0.15em; font-weight: 600;">KRYPTIX</span>
+  </div>
+
+  <!-- Boot Screen Animation -->
+  <div id="bootScreen" class="boot-screen">
+    <div class="boot-logo-wrap">
+      <img src="./logo.png" alt="Kryptix" class="boot-logo-img" onerror="this.style.opacity='0'">
+      <div class="boot-text">KRYPTIX</div>
+    </div>
+    <div class="boot-spinner"></div>
+  </div>
+
+  <div class="app-shell">
+
+    <!-- ─── Header ───────────────────────────────────── -->
+    <header class="topbar" id="topbar">
+      <div class="brand-block">
+        <div class="brand">Kryptix</div>
+        <p class="brand-sub">End-to-end encrypted mesh messenger</p>
+      </div>
+      <div class="topbar-actions">
+        <div class="status-pill" id="statusPill" data-tone="pending">
+          <span class="status-dot"></span>
+          <span id="statusText">Offline</span>
+        </div>
+        <button class="btn-icon" id="themeToggle" type="button" aria-label="Toggle theme">🌙</button>
+      </div>
+    </header>
+
+    <!-- ─── Main Two-Panel Layout ────────────────────── -->
+    <main class="main-layout" id="mainLayout">
+
+      <!-- LEFT: Setup Panel -->
+      <aside class="setup-panel" id="setupPanel">
+
+        <!-- Step 1: Identity -->
+        <section class="card" id="identityCard">
+          <div class="card-header">
+            <span class="step-badge">1</span>
+            <h2>Create Identity</h2>
+          </div>
+          <p class="help-text">Pick a unique name. Share it with your friends so they can connect to you.</p>
+          <div class="field">
+            <label for="peerIdInput">Your Name</label>
+            <div class="input-wrap">
+              <input id="peerIdInput" type="text" autocomplete="off" spellcheck="false" placeholder="e.g. alice-2024">
+            </div>
+          </div>
+          <div class="field">
+            <label for="sharedSecretInput">Encryption Password</label>
+            <div class="input-wrap">
+              <input id="sharedSecretInput" type="password" autocomplete="off" spellcheck="false" placeholder="Same password on every device">
+              <button class="input-btn" id="toggleSecretBtn" type="button">Show</button>
+            </div>
+            <span class="field-hint">All messages are encrypted with this password using AES-256-GCM.</span>
+          </div>
+          <div class="field turbo-field">
+            <div class="turbo-toggle-row">
+              <label for="turboToggle" class="turbo-label">⚡ Turbo LAN Mode</label>
+              <label class="toggle-switch">
+                <input type="checkbox" id="turboToggle">
+                <span class="toggle-slider"></span>
+              </label>
+            </div>
+            <span class="field-hint">Skips app-layer encryption for file transfers on trusted LANs. DTLS (WebRTC) still encrypts everything. Messages always use AES-256-GCM.</span>
+          </div>
+          <div class="btn-row">
+            <button class="btn btn-accent" id="goOnlineBtn" type="button">Go Online</button>
+            <button class="btn btn-outline" id="goOfflineBtn" type="button" disabled>Go Offline</button>
+          </div>
+          <div class="id-display" id="idDisplay" style="display:none">
+            <span class="id-label">Your ID:</span>
+            <code id="myPeerId"></code>
+            <button class="btn-small btn-outline" id="copyIdBtn" type="button">Copy</button>
+          </div>
+        </section>
+
+        <!-- Step 2: Connect -->
+        <section class="card" id="connectCard">
+          <div class="card-header">
+            <span class="step-badge">2</span>
+            <h2>Connect to Peers</h2>
+          </div>
+          <p class="help-text">Paste your friend's ID below and click Connect. You can add multiple IDs separated by commas.</p>
+          <div class="field">
+            <label for="connectInput">Friend's Peer ID</label>
+            <div class="input-wrap">
+              <input id="connectInput" type="text" autocomplete="off" spellcheck="false" placeholder="Paste peer ID here">
+            </div>
+          </div>
+          <div class="btn-row">
+            <button class="btn btn-accent" id="connectBtn" type="button" disabled>Connect</button>
+            <span class="peer-count" id="peerCount">0 peers</span>
+          </div>
+          <div class="peer-list" id="peerList"></div>
+        </section>
+
+        <!-- Step 3: Nearby Devices (Desktop LAN Discovery) -->
+        <section class="card nearby-card-hidden" id="nearbyCard">
+          <div class="card-header">
+            <span class="step-badge nearby-badge">
+              <span class="radar-ring"></span>
+              <span class="radar-ring radar-ring-2"></span>
+              <span class="radar-dot"></span>
+            </span>
+            <h2>Nearby Devices</h2>
+          </div>
+          <p class="help-text">Kryptix users on your Wi-Fi network appear here automatically.</p>
+          <div class="nearby-list" id="nearbyList">
+            <div class="nearby-empty">Scanning your network…</div>
+          </div>
+        </section>
+
+        <!-- Info + Footer -->
+        <section class="card card-muted">
+          <p class="help-text" style="margin:0">🔒 Messages are encrypted end-to-end. No server ever sees your content. Voice and video use WebRTC media encryption.</p>
+          <div id="turboIndicator" class="turbo-indicator" style="display:none">
+            <span class="turbo-badge">⚡ TURBO</span>
+            <span class="turbo-indicator-text">File transfers use DTLS-only encryption</span>
+          </div>
+        </section>
+        <footer class="footer">
+          <span>© Kryptix by</span>
+          <a href="https://github.com/shasradha" target="_blank" rel="noopener noreferrer">Shasradha Karmakar</a>
+        </footer>
+      </aside>
+
+      <!-- RIGHT: Chat + Media Panel -->
+      <section class="chat-area" id="chatArea">
+
+        <!-- Chat Panel -->
+        <div class="chat-panel" id="chatPanel">
+          <div class="chat-header">
+            <h2>Messages</h2>
+            <p id="chatStatus">Go online and connect a peer to start chatting.</p>
+          </div>
+          <div class="timeline" id="timeline" aria-live="polite"></div>
+          <!-- Transfer Progress Bar -->
+          <div id="transferBar" class="transfer-bar" style="display:none"></div>
+
+          <form class="composer" id="composer" novalidate>
+            <div class="input-wrap composer-wrap">
+              <textarea id="messageInput" rows="2" placeholder="Type a message… (Enter to send, Shift+Enter for new line)" disabled></textarea>
+            </div>
+            <button class="btn btn-accent" id="sendBtn" type="submit" disabled>Send</button>
+          </form>
+        </div>
+
+        <!-- Media Controls -->
+        <div class="media-bar" id="mediaBar">
+          <button class="btn-pill" id="voiceBtn" type="button" disabled>🎤 Voice</button>
+          <button class="btn-pill" id="videoBtn" type="button" disabled>📹 Video</button>
+          <button class="btn-pill" id="cameraBtn" type="button" disabled>📸 Camera</button>
+          <button class="btn-pill" id="filesBtn" type="button" disabled>📎 Files</button>
+          <button class="btn-pill" id="stopMediaBtn" type="button" disabled>⏹ Stop</button>
+          <button class="btn-pill" id="clearBtn" type="button">🗑 Clear</button>
+          <button class="btn-pill btn-danger-pill" id="panicBtn" type="button">💥 Wipe</button>
+        </div>
+
+        <!-- Media Grid -->
+        <div class="media-grid" id="mediaGrid"></div>
+      </section>
+
+    </main>
+
+    <!-- Hidden physical file inputs -->
+    <input id="fileInput" type="file" multiple hidden>
+    <input id="cameraPhotoInput" type="file" accept="image/*" capture="environment" hidden>
+    <input id="cameraVideoInput" type="file" accept="video/*" capture="environment" hidden>
+
+    <!-- Camera Mode Modal -->
+    <div id="cameraModal" class="camera-modal" style="display:none">
+      <div class="camera-modal-backdrop"></div>
+      <div class="camera-modal-content">
+        <div class="camera-modal-title">Choose Capture Mode</div>
+        <button class="btn btn-accent camera-modal-btn" id="cameraPhotoBtn" type="button">📸 Take Photo</button>
+        <button class="btn btn-accent camera-modal-btn" id="cameraVideoBtn" type="button">🎥 Record Video</button>
+        <button class="btn btn-outline camera-modal-btn" id="cameraCancelBtn" type="button">Cancel</button>
+      </div>
+    </div>
+
+    <!-- Drop Zone Overlay (Feature 4: Global Drag-and-Drop) -->
+    <div id="dropZone" class="drop-zone">
+      <div class="drop-zone-content">
+        <div class="drop-zone-icon">📂</div>
+        <div class="drop-zone-title">Drop files to send</div>
+        <div class="drop-zone-sub">Files will be sent to all connected peers</div>
+      </div>
+    </div>
+
+    <!-- Toasts -->
+    <div class="toast-wrap" id="toastWrap" aria-live="assertive"></div>
+  </div>
+
+  <script>
+    if ('serviceWorker' in navigator) {
+      window.addEventListener('load', () => {
+        navigator.serviceWorker.register('./sw.js').catch(err => console.error('SW reg failed:', err));
+      });
+    }
+  </script>
+  <script src="./js/config.js" defer></script>
+  <script src="https://unpkg.com/peerjs@1.5.4/dist/peerjs.min.js" defer></script>
+  <script src="./js/app.js" defer></script>
+</body>
+</html>

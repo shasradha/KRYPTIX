@@ -1,0 +1,7 @@
+<?xml version='1.0' encoding='utf-8'?>
+<resources>
+    <string name="app_name">Kryptix</string>
+    <string name="title_activity_main">Kryptix</string>
+    <string name="package_name">com.kryptix.kryptix</string>
+    <string name="custom_url_scheme">com.kryptix.kryptix</string>
+</resources>

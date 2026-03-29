@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "360567130386",
+    "project_id": "kryptix-538bd",
+    "storage_bucket": "kryptix-538bd.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:360567130386:android:16cfa00fb53affe51e4bcb",
+        "android_client_info": {
+          "package_name": "com.kryptix.kryptix"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBIy7jR9ZV02HbvEjcmu-cPT-oYS0pWj68"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

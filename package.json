@@ -1,0 +1,54 @@
+{
+  "name": "kryptix",
+  "version": "1.0.0",
+  "description": "",
+  "main": "desktop-main.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "node server.js",
+    "start:desktop": "electron .",
+    "build:desktop": "electron-builder -w"
+  },
+  "keywords": [],
+  "author": "Kryptix",
+  "license": "ISC",
+  "type": "commonjs",
+  "build": {
+    "appId": "com.kryptix.app",
+    "productName": "Kryptix",
+    "directories": {
+      "output": "dist"
+    },
+    "win": {
+      "target": [
+        "nsis"
+      ],
+      "icon": "www/logo.png"
+    },
+    "nsis": {
+      "oneClick": false,
+      "allowToChangeInstallationDirectory": true,
+      "createDesktopShortcut": true,
+      "createStartMenuShortcut": true,
+      "license": "license.txt"
+    },
+    "files": [
+      "desktop-main.js",
+      "desktop-preload.js",
+      "server.js",
+      "www/**/*",
+      "package.json"
+    ]
+  },
+  "dependencies": {
+    "@anuradev/capacitor-background-mode": "^7.2.1",
+    "@capacitor/android": "^8.3.0",
+    "@capacitor/core": "^8.3.0",
+    "@capacitor/filesystem": "^8.1.2"
+  },
+  "devDependencies": {
+    "@capacitor/cli": "^8.3.0",
+    "electron": "^41.1.0",
+    "electron-builder": "^26.8.1"
+  }
+}

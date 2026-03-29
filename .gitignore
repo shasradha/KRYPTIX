@@ -1,0 +1,10 @@
+node_modules/
+dist/
+test-profile/
+
+# Ignore actual personal keys to prevent credential leaks
+PERSONAL.txt
+
+# Allow config to be tracked
+!www/js/config.js
+!www/js/config.example.js
