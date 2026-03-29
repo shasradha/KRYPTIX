@@ -97,8 +97,8 @@ npx electron .
 *(Add your beautiful screenshots here! Place your images in an `assets/` folder and replace these links)*
 
 <div align="center">
-  <img src="https://via.placeholder.com/600x350.png?text=Kryptix+Dark+UI" width="400" />
-  <img src="https://via.placeholder.com/600x350.png?text=High+Speed+Transfers" width="400" />
+  <img src="assets/screenshot1.png" alt="Kryptix Dark UI" width="400" />
+  <img src="assets/screenshot2.png" alt="High Speed Transfers" width="400" />
 </div>
 
 ---
@@ -111,7 +111,11 @@ As I am a student, donations are limited but deeply appreciated 🙌
 
 **UPI ID:** `shasradha@ybl`
 
-*(You can scan the QR code included in this repository to donate via PhonePe!)*
+<div align="center">
+  <img src="assets/qr_code.png" alt="Support QR Code" width="250"/>
+  
+  *(Scan the QR code to donate via PhonePe!)*
+</div>
 
 > “This project is free & open-source. If you want faster features, servers, and updates — support development.”
 
